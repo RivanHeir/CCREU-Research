@@ -21,20 +21,15 @@ library(dplyr)
 library(tibble)
 library(ggplot2)
 library(tidyverse)
-
 library(purrr)
 library(stringr)
-
 library(LambertW)
-
-
 library(minpack.lm)
 ```
 
 #Fibonacci Number Function
 ```{r Fibonacci Number Code}
-#Fibonacci Number Code
-
+#Fibonacci Number Code: We want to generate a list of Fibonacci numbers for later reference.
 phi <-.5*(1+sqrt(5))
 
 fib_calc <- function(n) {
@@ -49,7 +44,7 @@ fib_calc <- function(n) {
   dp[1] <- 1
   dp[2] <- 1
   
-  # Compute Fibonacci numbers using dynamic programming
+  # Compute Fibonacci numbers
   if (n > 2) {
     for (i in 3:n) {
       dp[i] <- dp[i - 1] + dp[i - 2]
@@ -60,7 +55,6 @@ fib_calc <- function(n) {
   return(dp[n])
 }
 
-
 Fib_num_list <-numeric(1000)
 
 for (i in 1:2000) {
@@ -68,29 +62,26 @@ for (i in 1:2000) {
 }
 
 Fib_num_list
-  
-  
-  
+
+#Here we rewrite Fib_num_list[i] as a function. I had, at some points, used both lowercase and uppercase, and so both are defined here. 
+
   fib_number <-function(Term) {
     result <- Fib_num_list[Term]
     return(result)
   }
-  
   Fib_number <-function(Term) {
     result <- Fib_num_list[Term]
     return(result)
   }
-  
-
 ```
 
 
 #Part 1: Consecutive Fibonacci
 
 ```{r ConFib Definition}
-#Thousand sum Definition
+#Thousand sum Definition (This was first series explored, so naming convention wasn't established yet). 
 
-#ess <- 1
+#ess <- 1 #For testing.
 
 Thousand_sum <-function(ess, veclen) {
 
@@ -120,6 +111,8 @@ return(summ)
 
 
 ```{r ConsFib Sums Calculations for Ess Values}
+#Creating vectors of sums for increments of five group pairs"
+
 for (len5ths in 1:9) {
   Length <- 5 * len5ths
   Ess <- numeric(70)
@@ -161,6 +154,7 @@ for (len5ths in 1:9) {
 ```
 
 ```{r CF Sums Calculations for Ess Values joining}
+#Joining above vectors into first results tibble, "Consec_Values_Tib_All"
 options(digits = 10)
 
 Ess[i] <-Consec_Values_Tib[i,1]
@@ -235,7 +229,7 @@ Consec_Values_Tib_All %>%
   geom_point(aes(y = Sum45)) +
   geom_line(aes(y = Sum45))
 
-#Positive graph 
+#Positive graph
 Consec_Values_Tib_All %>%
   filter(Ess >= 0) %>%
   ggplot(aes(x = Ess)) + 
@@ -263,7 +257,7 @@ Consec_Values_Tib_All %>%
 
 
 ```{r ConFib regression for equation}
-
+#Using regression to create an approximating equation of a predetermined form (discovered using Desmos and trial and error)
 
 Consec_Values_Tib_All_fEss <-Consec_Values_Tib_All  %>%
   select(Ess, Sum45) %>%
@@ -445,12 +439,6 @@ s_peak_tib <-tibble(lengths) %>% mutate(peak = s_peak(lengths))
 s_peak_tib
 
 
-
-
-
-
-
-
 peak_model <-nlsLM(peak ~  (aPeak + bPeak * loglen + cPeak * loglen ^2) / (1 + ePeak * loglen + fPeak * loglen **2), data = s_peak_tib %>%  mutate(loglen = log(lengths), Len = 1.2*(log(lengths) + 1)), start =  list( aPeak = 5.4, bPeak = -5.4, cPeak = 1.5, ePeak = 1, fPeak = 0))
 
 summary(peak_model)
@@ -531,7 +519,6 @@ Ess[i] <- (i-6)/20
 SSum[i] <-Alt_Thousand_sum((i-6)/20, Length)
 gc()
 
-
 }
 
 for (i in (47:61))
@@ -547,7 +534,6 @@ Ess[i] <- (i-55)/2
 SSum[i] <-Alt_Thousand_sum((i-55)/2, Length)
 gc()
 
-
 }
 
 for (i in (66:70))
@@ -555,7 +541,6 @@ for (i in (66:70))
 Ess[i] <- i-60
 SSum[i] <-Alt_Thousand_sum(i-60, Length)
 gc()
-
 
 }
  Alt_Values_Tib <- tibble(
@@ -566,7 +551,6 @@ gc()
   assign(paste0("Alt_Values_Tib", sprintf("%02d", Length)), Alt_Values_Tib)
 }
 ```
-
 
 ```{r Alt_45_Sum joining}
 
@@ -599,7 +583,7 @@ Alt_Values_Tib_fullP
 #Alt_Values_Tib45 <-Alt_Values_Tib_full %>% filter(Length == 45)
 #Alt_Values_Tib_fullP<-Alt_Fib_All
 
-#Because of convergence, only sum partial sums are plotted, for visibility. 
+#Because of convergence, only some partial sums are plotted, for visibility. 
 Alt_Values_Tib_full %>% filter(Ess >= 0 ) %>%
   ggplot(aes(x = Ess)) + 
   geom_point(aes(y = Sum45)) + 
@@ -673,6 +657,7 @@ Alt_Values_Tib_fullP %>%
 
 
 #Part 3: Consecutive Triangular
+
 ```{r Consec Triangular Definition}
 Tri_Cons_Sum <- function(Ess, veclen) {
   num_vec <- 1:veclen
@@ -811,9 +796,7 @@ TriConsFullTibble %>%
   ) +
   theme_minimal()
 
- 
-
-rainbow(7)
+#rainbow(7)
 ```
 
 ```{r Reduced Tri Cons Color Map}
@@ -897,7 +880,6 @@ TriConsFullTibble %>% filter(Ess >= 0) %>% pivot_longer(names_to = "Length", val
 
 #%>% write.csv("~Con_Tri_All.csv")
 
-
 tri_cons_prime <- nlsLM(SSum ~  (-tcA+ log(Ess+tcD)+ 1*Ess+tcA * exp(tcB * Ess))/(tcC+ tcA * exp(tcB * Ess)), data = TC2K %>% filter(Ess >= 0) %>% unique(), start = list(tcA = 2.5, tcB = 0.4, tcC = -2, tcD = 1))
 
 summary(tri_cons_prime)
@@ -971,8 +953,7 @@ TA2K
 ```{r Tri Alt Sums by Ess}
 options(digits = 10)
 
-
- write.csv(TA2K, "TA2K.csv")
+# write.csv(TA2K, "TA2K.csv")
 
 TA2K %>%  filter(Ess >= 0) %>%
   ggplot(aes(x = Ess)) + 
@@ -984,13 +965,8 @@ TA2K %>%  filter(Ess >= 0) %>%
 TA2K
 
 
-
-
-
 TA2K_prime <-numeric(100)
 Ess_prime <- numeric(100)
-
-
 
 for (i in 1:74) {
   TA2K_prime[i] <- TA2K[[i,2]]
@@ -1093,23 +1069,19 @@ Tri_Alt_Prime %>%
 
 ```{r pseudo-R^2}
 calculate_pseudo_r2 <- function(data, fitted_model) {
-  # Compute RSS
-  rss <- sum(residuals(fitted_model)^2)
+ 
+  rss <- sum(residuals(fitted_model)^2)  # Compute RSS
   
-  # Extract the response variable from the model formula
-  response_var <- all.vars(formula(fitted_model))[1]
+  response_var <- all.vars(formula(fitted_model))[1]  # Extract the response variable from the model formula
   
-  # Compute TSS
-  tss <- sum((data[[response_var]] - mean(data[[response_var]]))^2)
+  tss <- sum((data[[response_var]] - mean(data[[response_var]]))^2)   # Compute TSS
   
-  # Compute pseudo-R2
-  pseudo_r_squared <- 1 - (rss/tss)
+  pseudo_r_squared <- 1 - (rss/tss)  # Compute pseudo-R2
   
   return(c(pseudo_r_squared, tss, rss))
 }
 calculate_pseudo_r2(Tri_Alt_Prime %>% filter(Ess_prime >= 0), TriAltModel)
-options(digits = 10)
-
+#options(digits = 10)
 ```
 
 #Writing CSVs (CAUTION)
@@ -1125,19 +1097,14 @@ options(digits = 10)
 # Tri_Alt_Prime %>% write.csv("Tri_Alt_Prime.csv")
 #final_tibble %>% write.csv("Alt_Tri_Final.csv")
 #Alt_Tri_Final %>% write.csv("Alt_Tri_Final.csv")
-
-
 ```
 
-
-#Misc
+#Miscellaneous
 ```{r Functions}
 FibConsP_fun <- function(Ess, Length) {
   result <-(cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1)
   return(result)
 }
-
-
 
 TriCons_fun <- function(Ess) {
   result <-(-tcA_coef+Ess+tcA_coef * exp(tcB_coef * Ess))/(tcC_coef + tcA_coef * exp(tcB_coef * Ess))
@@ -1147,9 +1114,9 @@ TriCons_fun <- function(Ess) {
 FibAlt_fun <- function(Ess) {
   result<-(-1 + afA_coef * Ess + exp(afB_coef * Ess)) /(afA_coef * Ess + exp(afB_coef * Ess))
   return(result)}
-
 ```
 
+#READING IN CSVs
 ```{r Reading in tibbles from csv}
 Alt_Fib_All <- read.csv("Alt_Fib_All.csv")
 Alt_Fib_All
@@ -1186,8 +1153,7 @@ Consec_Values_Tib_All <- Con_Fib_All %>%
             Sum20 = sum(Sum20),
             Sum15 = sum(Sum15),
             Sum10 = sum(Sum10),
-            Sum5 = sum(Sum5))
-            
+            Sum5 = sum(Sum5))          
 
 Con_Tri_All <- read.csv("Con_Tri_All.csv")
 Con_Tri_All
@@ -1204,10 +1170,10 @@ TA2K
 TC2K <- read.csv("TC2K.csv")
 TC2K
 
-
 ```
-
+_____________________________________________________________________________________________________________________________
 ##NOT USED##
+_____________________________________________________________________________________________________________________________
 
 ```{r disable-chunks, include=FALSE}
 # Disable evaluation for subsequent chunks
