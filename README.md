@@ -6,6 +6,6 @@ Although all of the proofs included are analytical, there was a significant nume
 
 Note that just above this line is code to read in the CSVs. Because these took a long time to calculate, the reader is invited to skip to this section, labeled "#READING IN CSVs", to pick up the CSVs that I used in my calculations, from which the graphs may be recreated. I put these at the bottom so that the skeptical (and patient) reader could easily run the whole document to verify my calculations. 
 
-In this document, I tried to preserve everything I did, even if it was not ultimately useful. Because of this, there is a line "##NOT USED##" beyond which lies the "graveyard" of unused code, graphs, and other roads not ultimately taken in the final project. Everything needed for this project can be found above this line. 
+In this document, I tried to preserve everything I did, even if it was not ultimately useful. Because of this, there is a line "##NOT USED##" (found around line 1200) beyond which lies the "graveyard" of unused code, graphs, and other roads not ultimately taken in the final project. Everything needed for this project can be found above this line. 
 
 Some of the graphing code was written with the help of generative AI (ChatGPT), but all of the non-coding work (the paper, poster, and presentation) were created without any AI assistance.
