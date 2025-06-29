@@ -1,0 +1,12 @@
+
+```{r}
+#install.packages("segmented")
+library(segmented)
+```
+
+```{r}
+#segmented_model <-segmented(lm(y ~ x, data = ), seg.Z = ~y, npsi = 2)
+
+
+```
+

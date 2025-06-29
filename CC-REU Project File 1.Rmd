@@ -1,0 +1,1825 @@
+---
+title: "CC-REU Project File 1"
+output: html_document
+date: '2024-06-27'
+---
+---
+title: "CC-REU Project 1"
+author: "Matthew Blake"
+date: "6/26/2024"
+output: html_document
+---
+
+```{r, include = FALSE}
+install.packages("purrr")
+install.packages("LambertW")
+install.packages("minpack.lm")
+```
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tibble)
+library(ggplot2)
+library(tidyverse)
+
+library(purrr)
+library(stringr)
+
+library(LambertW)
+
+
+library(minpack.lm)
+```
+
+#Fibonacci Number Function
+```{r Fibonacci Number Code}
+#Fibonacci Number Code
+
+phi <-.5*(1+sqrt(5))
+
+fib_calc <- function(n) {
+  if (n <= 1) {
+    return(n)
+  }
+  
+  # Initialize dp array to store Fibonacci numbers
+  dp <- numeric(n + 1)
+  dp[-1] <- 1
+  dp[0] <- 0
+  dp[1] <- 1
+  dp[2] <- 1
+  
+  # Compute Fibonacci numbers using dynamic programming
+  if (n > 2) {
+    for (i in 3:n) {
+      dp[i] <- dp[i - 1] + dp[i - 2]
+    }
+  }
+  
+  # Return Fibonacci number at index n
+  return(dp[n])
+}
+
+
+Fib_num_list <-numeric(1000)
+
+for (i in 1:2000) {
+  Fib_num_list[i] <- fib_calc(i)
+}
+
+Fib_num_list
+  
+  
+  
+  fib_number <-function(Term) {
+    result <- Fib_num_list[Term]
+    return(result)
+  }
+  
+  Fib_number <-function(Term) {
+    result <- Fib_num_list[Term]
+    return(result)
+  }
+  
+
+```
+
+
+#Part 1: Consecutive Fibonacci
+
+```{r ConFib Definition}
+#Thousand sum Definition
+
+#ess <- 1
+
+Thousand_sum <-function(ess, veclen) {
+
+Fib_num_list <-numeric(100)
+
+for (i in 1:100) {
+  Fib_num_list[i] <- fib_calc(i)
+}
+
+Fib_num_list
+  
+  
+num_vec <- 1:(veclen)
+summ <- 0
+for (term in num_vec) {
+  start1 <- 2* Fib_num_list[term + 1] - 1 
+  end1 <- Fib_num_list[term+3] - 2
+  start2 <- end1+1
+  end2 <- 2 * Fib_num_list[term+2]-2
+  
+straight_diff <- sum((start1:end1) ** (-1)) ** ess - sum((start2:end2)**(-1)) **ess
+summ <- summ + straight_diff
+}
+return(summ)
+}
+```
+
+
+```{r ConsFib Sums Calculations for Ess Values}
+for (len5ths in 1:9) {
+  Length <- 5 * len5ths
+  Ess <- numeric(70)
+  SSum <- numeric(70)
+  
+  for (i in 1:5) {
+    Ess[i] <- i - 6
+    SSum[i] <- Thousand_sum(i - 6, Length)
+  }
+  
+  for (i in 6:46) {
+    Ess[i] <- (i - 6) / 20
+    SSum[i] <- Thousand_sum((i - 6) / 20, Length)
+  }
+  
+  for (i in 47:61) {
+    Ess[i] <- (i - 36) / 5
+    SSum[i] <- Thousand_sum((i - 36) / 5, Length)
+  }
+  
+  for (i in 62:65) {
+    Ess[i] <- (i - 55) / 2
+    SSum[i] <- Thousand_sum((i - 55) / 2, Length)
+  }
+  
+  for (i in 66:70) {
+    Ess[i] <- i - 60
+    SSum[i] <- Thousand_sum(i - 60, Length)
+  }
+  
+  Consec_Values_Tib <- tibble(
+    Ess = Ess, 
+    SSum = SSum
+  ) %>% rename(!!paste0("Sum", sprintf("%02d", Length)) := SSum)
+  
+  assign(paste0("Consec_Values_Tib", sprintf("%02d", Length)), Consec_Values_Tib)
+}
+
+```
+
+```{r CF Sums Calculations for Ess Values joining}
+options(digits = 10)
+
+Ess[i] <-Consec_Values_Tib[i,1]
+SSum[i] <-Consec_Values_Tib[i,2]
+  
+  
+  Consec_Values_Tib45
+  Consec_Values_Tib45Prime[[1]]
+
+  
+Consec_Values_Tib_All <- list(
+  Consec_Values_Tib5,
+  Consec_Values_Tib10,
+  Consec_Values_Tib15,
+  Consec_Values_Tib20,
+  Consec_Values_Tib25,
+  Consec_Values_Tib30,
+  Consec_Values_Tib35,
+  Consec_Values_Tib40,
+  Consec_Values_Tib45
+) %>%
+  reduce(full_join, by = "Ess") %>%
+  arrange(Ess) %>%
+  distinct()
+
+Consec_Values_Tib_All 
+```
+
+```{r Points Graph- colors (different lengths) consfib}
+Consec_Values_Tib_All %>%
+  filter(Ess >= 0 & Ess < 8) %>%
+  ggplot(aes(x = Ess)) +
+  geom_point(aes(y = Sum5, color = "Sum5")) + 
+  geom_line(aes(y = Sum5, color = "Sum5")) +
+  geom_point(aes(y = Sum10, color = "Sum10")) + 
+  geom_line(aes(y = Sum10, color = "Sum10")) + 
+  geom_point(aes(y = Sum15, color = "Sum15")) + 
+  geom_line(aes(y = Sum15, color = "Sum15")) + 
+  geom_point(aes(y = Sum20, color = "Sum20")) +
+  geom_line(aes(y = Sum20, color = "Sum20")) +
+  geom_point(aes(y = Sum25, color = "Sum25")) +
+  geom_line(aes(y = Sum25, color = "Sum25")) +
+  geom_point(aes(y = Sum30, color = "Sum30")) + 
+  geom_line(aes(y = Sum30, color = "Sum30")) + 
+  geom_point(aes(y = Sum35, color = "Sum35")) + 
+  geom_line(aes(y = Sum35, color = "Sum35")) + 
+  geom_point(aes(y = Sum40, color = "Sum40")) + 
+  geom_line(aes(y = Sum40, color = "Sum40")) + 
+  geom_point(aes(y = Sum45, color = "Sum45")) + 
+  geom_line(aes(y = Sum45, color = "Sum45")) +
+  scale_color_manual(name = "Legend",
+                     values = c(Sum05 = "purple", Sum10 = "blue", Sum15 = "cyan",
+                                Sum20 = "dark green", Sum25 = "#32CD32", Sum30 = "yellow",
+                                Sum35 = "gold", Sum40 = "orange", Sum45 = "red"),
+                     labels = c("Sum05", "Sum10", "Sum15", "Sum20", "Sum25",
+                                "Sum30", "Sum35", "Sum40", "Sum45")) +
+  labs(
+    y = "Sum Values",
+    x = "Ess",
+    title = "Consecutive Values"
+  ) +
+  theme_minimal()
+
+  
+```
+
+```{r Line Graphs- Length = 45}
+#Closeup graph
+Consec_Values_Tib_All %>%
+  filter(Ess >= 0 & Ess < 6) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45)) +
+  geom_line(aes(y = Sum45))
+
+#Positive graph 
+Consec_Values_Tib_All %>%
+  filter(Ess >= 0) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45)) +
+  geom_line(aes(y = Sum45))
+
+#Complete graph
+
+Consec_Values_Tib_All %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45)) +
+  geom_line(aes(y = Sum45))
+
+```
+
+
+```{r Sums Calculations for Ess Values- colored}
+Consec_Values_Tib_All %>%
+  filter(Ess >= 0) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_line(aes(y = Sum45), color = "red") +  
+   geom_line(aes(y = Sum10), color = "blue") + 
+   geom_line(aes(y = Sum05), color = "#8B00FF")
+```
+
+
+```{r ConFib regression for equation}
+
+
+Consec_Values_Tib_All_fEss <-Consec_Values_Tib_All  %>%
+  select(Ess, Sum45) %>%
+  filter(Ess >= 0)   %>%
+   mutate(fEss = .25 * (Ess * exp(-Ess)) / (Ess + 1), 
+          index = row_number())
+Consec_Values_Tib_All_fEss
+
+#x/(x+1)e^(-x)
+
+ConFibModel <- nlsLM(Sum45 ~ (-cfA + cfB *Ess ** cfC + cfA *exp(Ess * cfD))/(cfA*exp(Ess*cfD) +1), data = Consec_Values_Tib_All %>% filter(Ess >= 0), start = list(cfA = 1.4, cfB = 15,  cfC = 1.3, cfD = 1.5))
+                   
+summary(ConFibModel)
+
+cfA_coef <-coef(ConFibModel)[[1]]
+cfB_coef <-coef(ConFibModel)[[2]]
+cfC_coef <-coef(ConFibModel)[[3]]
+cfD_coef <-coef(ConFibModel)[[4]]
+
+Consec_Values_Tib_All %>% filter(Ess >= 0) %>% 
+  mutate(fEss = (-cfA_coef + cfB_coef *Ess ** cfC_coef + cfA_coef *exp(Ess * cfD_coef))/(cfA_coef*exp(Ess*cfD_coef) +1)) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45)) + 
+  geom_line(aes(y = Sum45)) +
+  geom_point(aes(y = fEss), color = "blue") + 
+  geom_line(aes(y = fEss), color = "blue") + 
+  geom_point(aes(y = fEss - Sum45), color = "red") + 
+  geom_line(aes(y = fEss - Sum45), color = "red")
+
+tcA_coef
+tcB_coef
+tcC_coef
+
+```
+
+```{r ConFib pivot_longer, regression formula with Length- model}
+Consec_Values_Tib_All_Pivoted<- Consec_Values_Tib_All %>%
+  pivot_longer(2:10, names_to = "Length", values_to = "PartSum") %>%
+  mutate(Length =  as.numeric(str_sub(Length, start = 4)))
+
+Consec_Values_Tib_All_Pivoted <- Con_Fib_All
+
+ConFibPModel <- nlsLM(PartSum ~ (cfpD * Length * Ess-cfpA + cfpB *Ess +  cfpA *exp(Ess * cfpC))/(Length + cfpA*exp(Ess*cfpC)), data = Consec_Values_Tib_All_Pivoted %>% filter(Ess >= 0), start = list(cfpA = 1, cfpB = -1, cfpC = 1.5, cfpD = 1.75), control = nls.lm.control(maxiter = 100))
+                   
+summary(ConFibPModel)
+AIC(ConFibPModel)
+#5 Par: -3774.644086
+#4 Par: -3332.905071
+BIC(ConFibPModel)
+#5 Par: -3748.60193
+#4 Par:  -3311.203274
+
+cfpA_coef <-coef(ConFibPModel)[[1]]
+cfpB_coef <-coef(ConFibPModel)[[2]]
+cfpC_coef <-coef(ConFibPModel)[[3]]
+cfpD_coef <-coef(ConFibPModel)[[4]]
+```
+
+
+```{r ConFib pivot_longer, regression formula with Length- graph}
+Consec_Values_Tib_All_Pivoted %>% filter(Ess >= 0 & Ess < 6) %>% 
+  mutate(fEss = (cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1)) %>%
+  group_by(Length) %>%
+  ggplot(aes(x = Ess, color = as.factor(Length))) + 
+  geom_point(aes(y = PartSum)) + 
+  #geom_line(aes(y = PartSum)) + 
+  #geom_point(aes(y = fEss), shape = "k") + 
+  geom_line(aes(y = fEss)) + 
+   labs(
+    y = "Partial Sums",
+    x = "Ess",
+    title = "Partial Sums (points) versus Function Prediction (lines)",
+    color = "Partial Sum Length"
+  ) +
+  theme_minimal()
+
+
+#write_csv(Con_Fib_All)
+
+#Original Graph Code
+Consec_Values_Tib_All_Pivoted %>% filter(Ess >= 0) %>%
+  mutate(fEss = (cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1))%>%
+  group_by(Length)%>%
+ggplot(aes(x = Ess, color = as.factor(Length))) + 
+  #geom_point(aes(y = PartSum)) + 
+  geom_line(aes(y = PartSum)) + 
+  geom_point(aes(y = fEss), shape = 1) + 
+  #geom_line(aes(y = fEss)) + 
+   labs(
+    y = "Partial Sums",
+    x = "Ess",
+    title = "Partial Sums (lines) versus Function Prediction (points)",
+    color = "Partial Sum Length"
+  ) +
+  theme_minimal()
+
+#Updated Graph Code
+Consec_Values_Tib_All_Pivoted %>% filter(Ess >= 0) %>%
+  mutate(fEss = (cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1))%>%
+  group_by(Length)%>% 
+  rename(`Partial Sum` = "PartSum") %>%
+ggplot(aes(x = Ess, color = as.factor(Length))) + 
+  #geom_point(aes(y = `Partial Sum`)) + 
+  geom_line(aes(y = `Partial Sum`)) + 
+  geom_point(aes(y = fEss), shape = 1) + 
+  #geom_line(aes(y = fEss)) + 
+  theme_minimal() +
+  labs(color = "Legend", 
+      subtitle = expression("P"["CF"] * " Partial Sum by Ess and Sum Length"),
+    y = "Partial Sums",
+    x = "Ess",
+    title = "Consecutive Fibonacci Partial Sum",
+    color = "Partial Sum Length") +  
+  theme(
+     plot.title = element_text(size = 20, face = "bold", hjust = 0.5),  # Center title
+    plot.subtitle = element_text(size = 16, hjust = 0.5),                   # Subtitle size
+    axis.title = element_text(size = 16),                       # Axis titles size
+    axis.text = element_text(size = 16),
+     axis.line = element_line(color = "black"), # Axis text size
+    legend.title = element_text(size = 14),                     # Legend title size
+    legend.text = element_text(size = 14),
+     legend.position = c(0.55, 0.14),
+    legend.background = element_rect(fill = "transparent", color = "black")
+  ) + 
+  guides(color = guide_legend(nrow = 1, byrow = TRUE))
+
+#Ignore this:
+Consec_Values_Tib_All_Pivoted %>% filter(Ess >= 0) %>%
+  mutate(fEss = (cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1)) 
+#%>% write.csv("Con_Fib_All.csv")
+read.csv("Con_Fib_All.csv")
+
+```
+
+```{r Graphs by length}
+
+Consec_Values_Tib_All_Pivoted %>% filter(Ess >= 5) %>%
+  mutate(fEss = (cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1))%>%
+ggplot(aes(x = Length, color = as.factor(Ess))) + 
+  #geom_point(aes(y = PartSum)) + 
+  geom_line(aes(y = PartSum)) + 
+  #geom_point(aes(y = fEss), shape = 1) + 
+  #geom_line(aes(y = fEss)) + 
+   labs(
+    y = "Partial Sums",
+    x = "Length",
+    title = "Length vs Partial sums",
+    color = "Ess"
+  ) +
+  theme_minimal()
+```
+
+#Part 1.1: Peaks calculation
+```{r Peaks calculations and graphs}
+L_confib <- 100000
+k_confib <- (cfpA_coef * cfpC_coef + cfpD_coef * L_confib + cfpB_coef + cfpC_coef * L_confib + cfpC_coef) /  (cfpD_coef * L_confib + cfpB_coef)
+
+k_confib
+
+s_confib <- k_confib / cfpC_coef + 1/cfpC_coef * lamW::lambertW0((L_confib + 1)/ cfpA_coef * exp(-k_confib))
+
+s_confib
+
+
+s100000 <-s_confib
+
+s_peak <- function(Length) {
+  k_peak <-(cfpA_coef * cfpC_coef + cfpD_coef * Length + cfpB_coef + cfpC_coef * Length + cfpC_coef) /  (cfpD_coef * Length + cfpB_coef)
+  
+  s_peak_num <- k_peak / cfpC_coef + 1/cfpC_coef * lamW::lambertW0((Length + 1)/ cfpA_coef * exp(-k_peak))
+  
+  return(s_peak_num)
+}
+
+lengths <- c(10, 30, 45, 50, 75, 100, 150, 200, 300, 500, 750, 1000, 1250, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7500, 10000, 20000, 50000, 100000, 500000, 1000000, 10**7, 10**8, 10**9, 10**10, 10**12, 10**14,10**15, 10**16, 10**18)
+
+s_peak_tib <-tibble(lengths) %>% mutate(peak = s_peak(lengths))
+
+s_peak_tib
+
+
+
+
+
+
+
+
+peak_model <-nlsLM(peak ~  (aPeak + bPeak * loglen + cPeak * loglen ^2) / (1 + ePeak * loglen + fPeak * loglen **2), data = s_peak_tib %>%  mutate(loglen = log(lengths), Len = 1.2*(log(lengths) + 1)), start =  list( aPeak = 5.4, bPeak = -5.4, cPeak = 1.5, ePeak = 1, fPeak = 0))
+
+summary(peak_model)
+
+aPeak = coef(peak_model)[1]
+bPeak = coef(peak_model)[2]
+cPeak = coef(peak_model)[3]
+ePeak = coef(peak_model)[4]
+fPeak = coef(peak_model)[5]
+
+
+s_peak_tib %>% 
+  mutate(loglen = log(lengths),
+         `Predicted Peak` = (aPeak + bPeak * loglen + cPeak * loglen^2) / 
+                            (1 + ePeak * loglen + fPeak * loglen^2)) %>%
+  ggplot(aes(x = lengths)) + 
+  geom_point(aes(y = peak, color = "Peak"), size = 3) +  # Map color for peak
+  geom_line(aes(y = `Predicted Peak`, color = "Predicted Peak"), size = 1) +  # Map color for predicted peak
+  geom_function(aes(color = "Asymptote"), fun = function(x) 1.475 * log10(x) - 5.2, linetype = "dashed") +
+  scale_x_log10() + 
+  labs(
+    x = expression("Log"["10"] * " Lengths"),
+    y = "Peak s", 
+    color = "Legend", 
+    title = "Peak 's' by Partial Sum Length", 
+    subtitle = expression("Maximizing sum of " * "P"["CF"] * " by increasing partial sum")
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Peak" = "black", "Predicted Peak" = "blue", "Asymptote" = "red")) +  # Correct mapping
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),  # Center title
+    plot.subtitle = element_text(size = 16, hjust = 0.5),               # Subtitle size
+    axis.title = element_text(size = 16),                               # Axis titles size
+    axis.text = element_text(size = 16),                                # Axis text size
+    axis.line = element_line(color = "black"),                          # Axis lines color
+    legend.title = element_text(size = 16),                             # Legend title size
+    legend.text = element_text(size = 16),                              # Legend text size
+    legend.position = c(0.8, 0.3),                                    # Legend position
+    legend.background = element_rect(fill = "white", color = "black")  # Legend background
+  )
+
+#geom_function(aes(color = "Asymptote"), fun = function(x) 1.475 * log10(x) - 5.2, linetype = "dashed") +
+```
+
+#Part 2: Parity Fibonacci
+```{r Alt Fib Definition}
+options(digits = 15)
+
+Alt_Thousand_sum <- function(ess, veclen) {
+  num_vec <- 1:veclen
+  summ <- 0
+  
+  for (term in num_vec) {
+    summ <- summ + (sum(seq(2 * fib_number(term + 1) - 1, 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess - 
+                    sum(seq(2 * fib_number(term + 1), 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess)
+  }
+  
+  return(summ)
+  
+}
+```
+
+```{r Alt_45_Sum calculations by Ess}
+for (len5ths in 1:9) {
+Length <- len5ths * 5
+Ess <- numeric(70)
+SSum <- numeric(70)
+for (i in (1:5))
+{
+Ess[i] <- i-6
+SSum[i] <-Alt_Thousand_sum(i-6, Length)
+gc()
+
+}
+for (i in (6:46))
+{
+Ess[i] <- (i-6)/20
+SSum[i] <-Alt_Thousand_sum((i-6)/20, Length)
+gc()
+
+
+}
+
+for (i in (47:61))
+{
+Ess[i] <- (i-36)/5
+SSum[i] <-Alt_Thousand_sum((i-36)/5, Length)
+gc()
+}
+
+for (i in (62:65))
+{
+Ess[i] <- (i-55)/2
+SSum[i] <-Alt_Thousand_sum((i-55)/2, Length)
+gc()
+
+
+}
+
+for (i in (66:70))
+{
+Ess[i] <- i-60
+SSum[i] <-Alt_Thousand_sum(i-60, Length)
+gc()
+
+
+}
+ Alt_Values_Tib <- tibble(
+    Ess = Ess, 
+    SSum = SSum
+  ) %>% rename(!!paste0("Sum", sprintf("%02d", Length)) := SSum)
+  
+  assign(paste0("Alt_Values_Tib", sprintf("%02d", Length)), Alt_Values_Tib)
+}
+```
+
+
+```{r Alt_45_Sum joining}
+
+tib_list <- list(
+  Alt_Values_Tib45, 
+  Alt_Values_Tib40, 
+  Alt_Values_Tib35, 
+  Alt_Values_Tib30, 
+  Alt_Values_Tib25, 
+  Alt_Values_Tib20, 
+  Alt_Values_Tib15, 
+  Alt_Values_Tib10, 
+  Alt_Values_Tib05
+)
+
+Alt_Values_Tib_full <- purrr::reduce(tib_list, dplyr::full_join)
+
+
+Alt_Values_Tib_fullP <-Alt_Values_Tib_full %>%pivot_longer(2:10, names_to = "Length", values_to = "PSum") %>% mutate(Length = as.numeric(str_sub(Length, start = 4)))
+Alt_Values_Tib_fullP
+
+```
+
+```{r AltFib Graphing and Modelling}
+#P stands for Pivot, and refers to models which account for Length (ie partial sum) as a variable. 
+
+#Alt_Values_Tib_full <-Alt_Fib_All
+
+#These two no longer needed:
+#Alt_Values_Tib45 <-Alt_Values_Tib_full %>% filter(Length == 45)
+#Alt_Values_Tib_fullP<-Alt_Fib_All
+
+#Because of convergence, only sum partial sums are plotted, for visibility. 
+Alt_Values_Tib_full %>% filter(Ess >= 0 ) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45)) + 
+  geom_line(aes(y = Sum45)) +
+   geom_point(aes(y = Sum30)) + 
+  geom_line(aes(y = Sum30)) +
+   geom_point(aes(y = Sum15)) + 
+  geom_line(aes(y = Sum15)) +
+   geom_point(aes(y = Sum5)) + 
+  geom_line(aes(y = Sum5)) 
+
+AltFibModel <- nlsLM(Sum45 ~ (-1+ afA *Ess +  exp(afB * Ess)) /(afA * Ess + exp(afB * Ess)) , data = Alt_Values_Tib45 %>% filter(Ess >= 0), start = list( afA = 1,  afB = 1))
+                   
+summary(AltFibModel)
+
+afA_coef <- coef(AltFibModel)[[1]]
+afB_coef <- coef(AltFibModel)[[2]]
+
+Alt_Values_Tib45%>% filter(Ess >= 0 ) %>%
+  mutate(fEss = (-1 + afA_coef * Ess + exp(afB_coef * Ess)) /(afA_coef * Ess + exp(afB_coef * Ess))) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45)) + 
+  geom_line(aes(y = Sum45)) +
+  geom_point(aes(y = fEss), color = "blue") + 
+  geom_line(aes(y = fEss), color = "blue") 
+
+
+AltFibModelP <- nlsLM(PSum ~ (-1 + afpA * Ess +  exp(afpB * Ess) + Ess * afpC * (1-1/Length)) /(1 + afpA * Ess + exp(afpB * Ess)) , data = Alt_Values_Tib_fullP %>% filter(Ess >= 0), start = list( afpA = 2.3,  afpB = 1,  afpC = .5))
+                   
+summary(AltFibModelP)
+
+afpA_coef <- coef(AltFibModelP)[[1]]
+afpB_coef <- coef(AltFibModelP)[[2]]
+afpC_coef <- coef(AltFibModelP)[[3]]
+
+Alt_Values_Tib_fullP %>%
+  filter(Ess >= 0  & {Length == 5 | Length == 20 | Length == 45}) %>% unique() %>%
+  mutate(fEss = (-1 + afpA_coef * Ess + Ess * afpC_coef * (1 - 1 / Length) + exp(afpB_coef * Ess)) / 
+                (1 + afpA_coef * Ess + exp(afpB_coef * Ess))) %>%
+  ggplot(aes(x = Ess, color = as.factor(Length))) + 
+    geom_point(aes(y = PSum), size = 0.5) + 
+    geom_line(aes(y = fEss), size = 0.5) +
+   theme_minimal() +
+  labs(color = "Legend", 
+      subtitle = expression("P"["PF"] * " Partial Sum by Ess and Sum Length"),
+    y = "Partial Sums",
+    x = "Ess",
+    title = "Parity Fibonacci Partial Sum",
+    color = "Partial Sum Length") +  
+  theme(
+     plot.title = element_text(size = 20, face = "bold", hjust = 0.5),  # Center title
+    plot.subtitle = element_text(size = 16, hjust = 0.5),                   # Subtitle size
+    axis.title = element_text(size = 16),                       # Axis titles size
+    axis.text = element_text(size = 16),
+     axis.line = element_line(color = "black"), # Axis text size
+    legend.title = element_text(size = 14),                     # Legend title size
+    legend.text = element_text(size = 14),
+     legend.position = c(0.7, 0.25),
+    legend.background = element_rect(fill = "white", color = "black")
+  )
+
+
+
+  #Alt_Values_Tib_fullP %>%
+  #filter(Ess >= 0) %>% unique() %>%
+ # mutate(fEss = (-1 + afpA_coef * Ess + Ess * afpC_coef * (1 - 1 / Length) + exp(afpB_coef * Ess)) / 
+  #              (1 + afpA_coef * Ess + exp(afpB_coef * Ess))) %>% write.csv("Alt_Fib_All.csv")
+
+
+```
+
+
+#Part 3: Consecutive Triangular
+```{r Consec Triangular Definition}
+Tri_Cons_Sum <- function(Ess, veclen) {
+  num_vec <- 1:veclen
+  summ <- 0
+  
+  for (k in num_vec) {
+    summ <- summ + sum(( (1:(1/2*k*(k+1))) + 1/3 * (k - 1)*k*(k+1)) ** (-1)) ** Ess - (sum(( (1:(1/2*k*(k+1))) + 1/2 * k * (k+1) + 1/3 * (k - 1)*k*(k+1)) ** (-1))) ** Ess
+  }
+  return(summ) }
+```
+
+```{r Tri Cons Sum Calculations by Ess}
+
+for(lennum in c(10,25,50,75,100,150,200,250,300,400,500,750,1000,1500,2000,3000,5000)) {
+Length <-lennum
+Ess <- numeric(100)
+SSum <- numeric(100)
+for (i in (1:5))
+{
+Ess[i] <- i-6
+SSum[i] <-Tri_Cons_Sum(i-6, Length)
+gc()
+}
+for (i in (6:46))
+{
+Ess[i] <- (i-6)/20
+SSum[i] <-Tri_Cons_Sum((i-6)/20, Length)
+gc()
+
+
+}
+
+for (i in (47:61))
+{
+Ess[i] <- (i-36)/5
+SSum[i] <-Tri_Cons_Sum((i-36)/5, Length)
+gc()
+}
+
+for (i in (62:65))
+{
+Ess[i] <- (i-55)/2
+SSum[i] <-Tri_Cons_Sum((i-55)/2, Length)
+gc()
+}
+
+for (i in (66:70))
+{
+Ess[i] <- i-60
+SSum[i] <-Tri_Cons_Sum(i-60, Length)
+gc()
+}
+
+TriCons <- tibble(
+    Ess = Ess, 
+    SSum = SSum
+  ) %>% rename(!!paste0("Sum", sprintf("%02d", Length)) := SSum)
+  
+  assign(paste0("TriCons", Length), TriCons)
+}
+
+#TC10K_num <- Tri_Cons_Sum(1,10000)
+```
+
+```{r Tri Cons Values list / joining}
+TriConsList <-list(
+TriCons10,
+TriCons25,
+TriCons50,
+TriCons75,
+TriCons100,
+TriCons150,
+TriCons200,
+TriCons250,
+TriCons300,
+TriCons400,
+TriCons500,
+TriCons750,
+TriCons1000,
+TriCons1500,
+TriCons2000,
+TriCons3000,
+TriCons5000
+)
+
+TriConsFullTibble <- reduce(TriConsList, full_join, by = "Ess") %>% unique()
+
+TriConsFullTibble
+
+TriConsFullTibble <-Con_Tri_All
+```
+
+
+```{r Tri Cons Color Map}
+color <- numeric(7)
+
+for (i in 1:7) {
+  color[i] = adjustcolor(rainbow(6)[i], alpha.f = 1, red.f = 0.7, green.f = 0.7, blue.f = 0.7)
+}
+color
+
+
+TriConsFullTibble %>% 
+  filter(Ess >= 0) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum05, color = "Sum0005"), shape = 16) +
+  geom_line(aes(y = Sum05, color = "Sum0005")) +
+  geom_point(aes(y = Sum10, color = "Sum0010"), shape = 16) +
+  geom_line(aes(y = Sum10, color = "Sum0010")) +
+  geom_point(aes(y = Sum25, color = "Sum0025"), shape = 16) +
+  geom_line(aes(y = Sum25, color = "Sum0025")) +
+  geom_point(aes(y = Sum50, color = "Sum0050"), shape = 16) +
+  geom_line(aes(y = Sum50, color = "Sum0050")) +
+  geom_point(aes(y = Sum200, color = "Sum0200"), shape = 16) +
+  geom_line(aes(y = Sum200, color = "Sum0200")) +
+  geom_point(aes(y = Sum1000, color = "Sum1000"), shape = 16) +
+  geom_line(aes(y = Sum1000, color = "Sum1000")) + 
+  geom_point(aes(y = Sum5000, color = "Sum5000"), shape = 16) +
+  geom_line(aes(y = Sum5000, color = "Sum5000")) + 
+  scale_color_manual(
+    name = "Legend",
+    values = c(
+      "Sum0005" = "purple",
+      "Sum0010" = "#0000B3FF",
+      "Sum0025" = "#00B3B3FF",
+      "Sum0050" = "#00B300FF",
+      "Sum0200" = "#B3B300FF",
+      "Sum1000" = "#B30000FF",
+      "Sum5000" = "black"
+    )
+  ) +
+  labs(
+    y = "Sum Values",
+    x = "Ess",
+    title = "Consecutive Triangular Series Sums by S"
+  ) +
+  theme_minimal()
+
+ 
+
+rainbow(7)
+```
+
+```{r Reduced Tri Cons Color Map}
+TriConsFullTibble %>% 
+  filter(Ess >= 0) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum05, color = "Sum0005"), shape = 16) +
+  geom_line(aes(y = Sum05, color = "Sum0005")) +
+  geom_point(aes(y = Sum10, color = "Sum0010"), shape = 16) +
+  geom_line(aes(y = Sum10, color = "Sum0010")) +
+  geom_point(aes(y = Sum25, color = "Sum0025"), shape = 16) +
+  geom_line(aes(y = Sum25, color = "Sum0025")) +
+  geom_point(aes(y = Sum50, color = "Sum0050"), shape = 16) +
+  geom_line(aes(y = Sum50, color = "Sum0050")) +
+  geom_point(aes(y = Sum200, color = "Sum0200"), shape = 16) +
+  geom_line(aes(y = Sum200, color = "Sum0200")) +
+  geom_point(aes(y = Sum1000, color = "Sum1000"), shape = 16) +
+  geom_line(aes(y = Sum1000, color = "Sum1000")) + 
+  scale_color_manual(
+    name = "Legend",
+    values = c(
+      "Sum0005" = "purple",
+      "Sum0010" = "#0000B3FF",
+      "Sum0025" = "#00B3B3FF",
+      "Sum0050" = "#00B300FF",
+      "Sum0200" = "#B3B300FF",
+      "Sum1000" = "#B30000FF"
+    )
+  ) +
+  labs(
+    y = "Sum Values",
+    x = "Ess",
+    title = "Consecutive Triangular Series Sums by S"
+  ) +
+  theme_minimal()
+```
+
+
+```{r Tri Cons Sum1000 Map and normalising and Approximating Formula}
+custom_power <- function(base, exp) {
+  if (base == 0 && exp > 0) {
+    return(0)
+  } else {
+    return(base^exp)
+  }
+}
+
+TriConsFullTibblePos <-Con_Tri_All
+
+#TriConModel_Actual <- nlsLM(Sum1000 ~  (-tcA+ 1*Ess+tcA * exp(tcB * Ess))/(tcC+ tcA * exp(tcB * Ess)), data = TriConsFullTibblePos %>% filter(Ess >= 0), start = list(tcA = 2.5, tcB = 0.4, tcC = -2))
+
+
+TriConModel <- nlsLM(Sum1000 ~  (-tcA+ log(Ess+tcD)+ 1*Ess+tcA * exp(tcB * Ess))/(tcC+ tcA * exp(tcB * Ess)), data = TriConsFullTibblePos %>% filter(Ess >= 0), start = list(tcA = 2.5, tcB = 0.4, tcC = -2, tcD = 1))
+                   
+summary(TriConModel)
+
+tcA_coef <-coef(TriConModel)[[1]]
+tcB_coef <-coef(TriConModel)[[2]]
+tcC_coef <-coef(TriConModel)[[3]]
+tcD_coef <-coef(TriConModel)[[4]]
+
+TriConsFullTibble %>% filter(Ess >= 0) %>% 
+  mutate(fEss = (-tcA_coef+ log(Ess + tcD_coef)+Ess+tcA_coef * exp(tcB_coef * Ess))/(tcC_coef + tcA_coef * exp(tcB_coef * Ess))) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum1000)) + 
+  geom_line(aes(y = Sum1000), size = 0.6) +
+   # geom_point(aes(y = fEss - Sum1000), color = "red") + 
+  #geom_line(aes(y = fEss - Sum1000), color = "red") +
+  geom_point(aes(y = fEss), color = "blue") + 
+  geom_line(aes(y = fEss), color = "blue", size = 0.6) 
+
+
+tcA_coef
+tcB_coef
+tcC_coef
+tcD_coef
+
+#(-tcA_coef+ log(1 + tcD_coef)+1+tcA_coef * exp(tcB_coef * 1))/(tcC_coef + tcA_coef * exp(tcB_coef * 1))
+
+TriConsFullTibble %>% filter(Ess >= 0) %>% pivot_longer(names_to = "Length", values_to = "Sum") %>% mutate(Length = as.numeric(str_remove(Length, "^Sum")), fEss = (-tcA_coef+ log(Ess + tcD_coef)+Ess+tcA_coef * exp(tcB_coef * Ess))/(tcC_coef + tcA_coef * exp(tcB_coef * Ess))) 
+
+#%>% write.csv("~Con_Tri_All.csv")
+
+
+tri_cons_prime <- nlsLM(SSum ~  (-tcA+ log(Ess+tcD)+ 1*Ess+tcA * exp(tcB * Ess))/(tcC+ tcA * exp(tcB * Ess)), data = TC2K %>% filter(Ess >= 0) %>% unique(), start = list(tcA = 2.5, tcB = 0.4, tcC = -2, tcD = 1))
+
+summary(tri_cons_prime)
+```
+
+#Part 4: Alternating Triangular
+```{r Tri Alt Def}
+Tri_Alt_Sum <- function(Ess, veclen) {
+  num_vec <- 1:veclen
+  summ <- 0
+  
+  for (i in num_vec) {
+    summ <- summ + sum((2*(1:(i*(i+1)/2))+1/3*(i-1)*i*(i+1)-1 )**(-1))**Ess - sum((2*(1:(i*(i+1)/2))+1/3*(i-1)*i*(i+1))**(-1))**Ess
+  }
+  
+  return(summ)
+}
+  
+ # exp(Tri_Alt_Sum(1,1000))
+```
+
+```{r Tri Alt Sums by Ess}
+lengths <- c(10,25,50,75,100,125,150,200,250,300,400,500,600,750,1000,1250,1500,2000,3000,5000)
+
+tibble_list <- lapply(lengths, function(len) {
+  Ess <- numeric(77)
+  SSum <- numeric(77)
+  
+  for (i in 1:5) {
+    Ess[i] <- i - 6
+    SSum[i] <- Tri_Alt_Sum(i - 6, len)
+  }
+  
+  for (i in 6:46) {
+    Ess[i] <- (i - 6) / 20
+    SSum[i] <- Tri_Alt_Sum((i - 6) / 20, len)
+  }
+  
+  for (i in 47:61) {
+    Ess[i] <- (i - 36) / 5
+    SSum[i] <- Tri_Alt_Sum((i - 36) / 5, len)
+  }
+  
+  for (i in 62:66) {
+    Ess[i] <- i - 56
+    SSum[i] <- Tri_Alt_Sum(i - 56, len)
+  }
+  
+  for (i in 67:77) {
+    Ess[i] <- (i - 17) / 20
+    SSum[i] <- Tri_Alt_Sum((i - 17) / 20, len)
+  }
+  
+  tibble(Ess = Ess, SSum = SSum) %>%
+    rename(!!paste0("Sum", sprintf("%02d", len)) := SSum)
+})
+
+final_tibble <- reduce(tibble_list, full_join, by = "Ess")
+Tri_alt_final <-final_tibble
+
+TA2K <- final_tibble %>% dplyr::select(Ess, Sum2000)
+TA2K
+```
+
+
+```{r Tri Alt Sums by Ess}
+#final_tibble %>% write.csv("Alt_Tri_final.csv")
+```
+
+
+```{r Tri Alt Sums by Ess}
+options(digits = 10)
+
+
+ write.csv(TA2K, "TA2K.csv")
+
+TA2K %>%  filter(Ess >= 0) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum2000))
+
+#Tri_Alt_Sum(20, 2000)
+
+
+TA2K
+
+
+
+
+
+TA2K_prime <-numeric(100)
+Ess_prime <- numeric(100)
+
+
+
+for (i in 1:74) {
+  TA2K_prime[i] <- TA2K[[i,2]]
+  Ess_prime[i] <- TA2K[[i,1]]
+  }
+
+for (i in 75:78) {
+   Ess_prime[i] <- (i-70)*2.5
+  TA2K_prime[i] <- Tri_Alt_Sum((i-70)*2.5, 2000)}
+
+for (i in 79:82) {
+  Ess_prime[i] <- (i-74)*5
+  TA2K_prime[i] <- Tri_Alt_Sum((i-74)*5, 2000)}
+
+for (i in 83:88) {
+  Ess_prime[i] <- (i-78)*10
+  TA2K_prime[i] <- Tri_Alt_Sum((i-78)*10, 2000)}
+
+for (i in 89:98) {
+  Ess_prime[i] <- 4.2 +(i-89)/50
+  TA2K_prime[i] <- Tri_Alt_Sum(4.2 +(i-89)/50, 2000)}
+
+for (i in 99:100) {
+  Ess_prime[i] <- 4.21+(i-98)/50
+  TA2K_prime[i] <- Tri_Alt_Sum(4.21+(i-98)/50, 2000)}
+```
+
+
+```{r Tri Alt Sums by Ess graph (new) }
+Tri_Alt_Prime <-tibble(
+  Ess_prime, 
+  TA2K_prime
+) %>% arrange(Ess_prime) %>%unique()
+
+#Tri_Alt_Prime %>% write.csv("Tri_Alt_Prime.csv")
+#Tri_Alt_Prime <- read.csv("Tri_Alt_Prime.csv")
+
+
+
+Tri_Alt_Prime %>% filter(Ess_prime > -1) %>%
+  ggplot(aes(x = Ess_prime)) + 
+  geom_point(aes(y = TA2K_prime))
+
+Tri_Alt_Prime %>% filter(Ess_prime > -1 & Ess_prime < 50) %>%
+  ggplot(aes(x = Ess_prime)) + 
+  geom_point(aes(y = TA2K_prime))
+
+```
+
+
+```{r Tri Alt Model}
+
+TriAltModel <- nlsLM(TA2K_prime ~ (-taA + taB *Ess_prime + taA *exp(Ess_prime * taC))/(1+ taD *Ess_prime + taA *exp(Ess_prime*taC)), data = Tri_Alt_Prime %>% filter(Ess_prime >= 0), start = list(taA = 1, taB = 1, taC = 1, taD = -0.5), control = nls.lm.control(maxiter = 100))
+
+summary(TriAltModel)
+AIC(TriAltModel)
+#5 Par: -3774.644086
+#4 Par: -3332.905071
+BIC(TriAltModel)
+#5 Par: -3748.60193
+#4 Par:  -3311.203274
+
+taA_coef <-coef(TriAltModel)[[1]]
+taB_coef <-coef(TriAltModel)[[2]]
+taC_coef <-coef(TriAltModel)[[3]]
+taD_coef <-coef(TriAltModel)[[4]]
+
+
+taA_coef 
+taB_coef 
+taC_coef 
+taD_coef 
+
+Tri_Alt_Prime %>%
+  filter(Ess_prime >= 0 & Ess_prime < 50) %>%
+  mutate(fEss = (-taA_coef + taB_coef * Ess_prime + taA_coef * exp(Ess_prime * taC_coef)) /
+           (1 + taD_coef * Ess_prime + taA_coef * exp(Ess_prime * taC_coef))) %>%
+  rename(Ess = Ess_prime, `Partial Sum` = TA2K_prime) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = `Partial Sum`, color = "Partial Sum"), size = 2) +  # Map color for Part_Sum
+  geom_line(aes(y = fEss, color = "Predicted Partial Sum"), size = 1) +  # Map color for fEss
+  geom_hline(aes(yintercept = 1, color = "Sum = 1"), linetype = "dashed", size = 1) +  # Map color for horizontal asymptote
+  scale_color_manual(values = c("Partial Sum" = "black", "Predicted Partial Sum" = "blue", "Sum = 1" = "red")) +  # Manual color mapping
+  labs(color = "Legend", 
+       title = "Parity Triangular Partial Sums by Exponent 's'", 
+      subtitle = expression("4000th Term " * "P"["PT"] * " Partial Sums and Predictions")) +  
+  theme_minimal() +
+  theme(
+     plot.title = element_text(size = 20, face = "bold", hjust = 0.5),  # Center title
+    plot.subtitle = element_text(size = 16, hjust = 0.5),                   # Subtitle size
+    axis.title = element_text(size = 16),                       # Axis titles size
+    axis.text = element_text(size = 16),
+     axis.line = element_line(color = "black"), # Axis text size
+    legend.title = element_text(size = 16),                     # Legend title size
+    legend.text = element_text(size = 16),
+     legend.position = c(0.6, 0.4),
+    legend.background = element_rect(fill = "white", color = "black")
+  )
+    ```
+
+```{r pseudo-R^2}
+calculate_pseudo_r2 <- function(data, fitted_model) {
+  # Compute RSS
+  rss <- sum(residuals(fitted_model)^2)
+  
+  # Extract the response variable from the model formula
+  response_var <- all.vars(formula(fitted_model))[1]
+  
+  # Compute TSS
+  tss <- sum((data[[response_var]] - mean(data[[response_var]]))^2)
+  
+  # Compute pseudo-R2
+  pseudo_r_squared <- 1 - (rss/tss)
+  
+  return(c(pseudo_r_squared, tss, rss))
+}
+calculate_pseudo_r2(Tri_Alt_Prime %>% filter(Ess_prime >= 0), TriAltModel)
+options(digits = 10)
+
+```
+
+#Writing CSVs (CAUTION)
+```{r Writing CSVs (CAUTION), eval = FALSE}
+#Undo write marks (#) before lines to write / overwrite the csvs
+
+# Con_Fib_All %>% write.csv("Con_Fib_All.csv")
+# Alt_Fib_All %>% write.csv("Alt_Fib_All.csv")
+# Con_Tri_All %>% write.csv("Con_Tri_All.csv")
+# Alt_Tri_All %>% write.csv("Alt_Tri_All.csv")
+# TA2K %>% write.csv("TA2K.csv")
+# TC2K %>% write.csv("TC2K.csv")
+# Tri_Alt_Prime %>% write.csv("Tri_Alt_Prime.csv")
+#final_tibble %>% write.csv("Alt_Tri_Final.csv")
+#Alt_Tri_Final %>% write.csv("Alt_Tri_Final.csv")
+
+
+```
+
+
+#Misc
+```{r Functions}
+FibConsP_fun <- function(Ess, Length) {
+  result <-(cfpD_coef * Length * Ess- cfpA_coef + cfpB_coef *Ess +  cfpA_coef *exp(Ess * cfpC_coef))/(Length + cfpA_coef *exp(Ess* cfpC_coef) +1)
+  return(result)
+}
+
+
+
+TriCons_fun <- function(Ess) {
+  result <-(-tcA_coef+Ess+tcA_coef * exp(tcB_coef * Ess))/(tcC_coef + tcA_coef * exp(tcB_coef * Ess))
+  return(result)
+}
+
+FibAlt_fun <- function(Ess) {
+  result<-(-1 + afA_coef * Ess + exp(afB_coef * Ess)) /(afA_coef * Ess + exp(afB_coef * Ess))
+  return(result)}
+
+```
+
+```{r Reading in tibbles from csv}
+Alt_Fib_All <- read.csv("Alt_Fib_All.csv")
+Alt_Fib_All
+
+Alt_Values_Tib_full <- Alt_Fib_All %>%
+  mutate(Sum_col = paste0("Sum", Length)) %>% 
+  pivot_wider(names_from = Sum_col, values_from = PSum) %>% 
+  mutate(across(5:13, ~ replace_na(., 0))) %>% 
+  group_by(Ess) %>% 
+  summarise(Sum45 = sum(Sum45), 
+            Sum40 = sum(Sum40),
+            Sum35 = sum(Sum35),
+            Sum30 = sum(Sum30),
+            Sum25 = sum(Sum25),
+            Sum20 = sum(Sum20),
+            Sum15 = sum(Sum15),
+            Sum10 = sum(Sum10),
+            Sum5 = sum(Sum5))
+
+Alt_Values_Tib_full
+
+Con_Fib_All <- read.csv("Con_Fib_All.csv")
+Con_Fib_All
+Consec_Values_Tib_All <- Con_Fib_All %>% 
+  mutate(Sum_col = paste0("Sum", Length)) %>% 
+  pivot_wider(names_from = Sum_col, values_from = PartSum) %>% 
+  mutate(across(5:13, ~ replace_na(., 0))) %>% 
+  group_by(Ess) %>% 
+  summarise(Sum45 = sum(Sum45), 
+            Sum40 = sum(Sum40),
+            Sum35 = sum(Sum35),
+            Sum30 = sum(Sum30),
+            Sum25 = sum(Sum25),
+            Sum20 = sum(Sum20),
+            Sum15 = sum(Sum15),
+            Sum10 = sum(Sum10),
+            Sum5 = sum(Sum5))
+            
+
+Con_Tri_All <- read.csv("Con_Tri_All.csv")
+Con_Tri_All
+
+Tri_Alt_Prime <- read.csv("Tri_Alt_Prime.csv")
+Tri_Alt_Prime
+
+Tri_Alt_Final <- read.csv("Alt_Tri_final.csv")
+Tri_Alt_Final
+
+TA2K <- read.csv("TA2K.csv")
+TA2K
+
+TC2K <- read.csv("TC2K.csv")
+TC2K
+
+
+```
+
+##NOT USED##
+
+```{r disable-chunks, include=FALSE}
+# Disable evaluation for subsequent chunks
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+For precision calculations:
+```{r Calculating max s value for straight series}
+#Calculating max s value for Consecutive series
+epsilon <- 1* 10 ** (-7)
+prec <- 40
+Thousand_sum(.700083 - epsilon, prec)
+Thousand_sum(.700083, prec)
+Thousand_sum(.700083 + epsilon, prec)
+```
+
+```{r Thousand Sum Checks}
+Thousand_sum(.4,35)
+Thousand_sum(.7, 35)
+
+Thousand_sum(2, 35)
+```
+
+Verification of partial sums (to check that the formula was coded properly)
+```{r Straight Sum Positive and Negative Partial sum Check}
+
+
+options(digits = 15)
+
+ess <-1
+term <- 35
+
+
+partialplus_term_list <- numeric(39)
+for (term  in 0:38)
+partialplus_term_list[term] <- sum( ((2* fib_number(term + 2) - 1 ):(fib_number(term+2) + fib_number(term+3) - 2)) **(-1)) ** ess
+
+partialminus_term_list <- numeric(39)
+for (term  in 0:38)
+partialminus_term_list[term] <-sum(((fib_number(term+2) + fib_number(term+3)-1):(2 * fib_number(term+3)-2))**(-1)) **ess
+
+partialplus_term_list
+partialminus_term_list
+
+
+
+StraightSum_tibble <- tibble(
+  Iteration = 0:38,
+  PartialPlusTerm = partialplus_term_list,
+  PartialMinusTerm = partialminus_term_list,
+  Difference = partialplus_term_list - partialminus_term_list
+)
+StraightSum_tibble %>% view()
+
+
+
+
+#+ sum(((fib_number(term+1) + fib_number(term+2)):(2 * fib_number(term+2)-2))**(-1)) **ess
+```
+
+
+```{r Straight Results through 35}
+straight_results <- numeric(35)
+for (i in 1:35)
+  straight_results[i] <-Thousand_sum(1, i)
+
+straight_results
+```
+
+
+```{r Straight Individual Term Values}
+Term_Exp_Sum <-function(ess, veclen) {
+
+num_vec <- 1:(veclen)
+summ <- 0
+for (term in num_vec)
+summ <- summ + sum(  ((2* fib_number(term + 1) - 1 ):(fib_number(term+1) + fib_number(term+2) - 2)) **(-1)) ** term - sum(((fib_number(term+1) + fib_number(term+2)-1):(2 * fib_number(term+2)-2))**(-1)) **term
+
+return(paste0(summ, ",", ess))
+
+gc()
+}
+```
+
+```{r Straight Sum Term Values List through 40}
+term_exp_vec <- numeric(0)
+for (i in 1:40)
+  term_exp_vec <- c(term_exp_vec, Term_Exp_Sum(1, i))
+print(term_exp_vec)
+
+
+```
+
+```{r Straight Sum Euler Approx.}
+
+eul <- -digamma(1)
+
+Straight_Euler_Approx <- function(ess, veclen) {
+num_vec <- 2:(veclen+1)
+summ <- 0
+cum_big_straight_diff <-numeric(veclen)
+cum_little_straight_diff <-numeric(veclen)
+for (term in num_vec)
+little_straight_diff <- (log((fib_number(term+2)+2)/(2 * fib_number(term) - 2)) + eul - fib_number(term + 1) / (4 * (fib_number(term + 2) - 2) * (fib_number(term) - 1)) ) ** ess - (log((2 * fib_number(term + 1) - 2) / (fib_number(term + 2) - 2)) + eul - fib_number(term - 1)  / (4 * (fib_number(term + 2) - 2) * (fib_number(term + 1) - 1)) + (4 * (fib_number(term + 1) - 1) ** 2 - (fib_number(term + 2)-2) ** 2) / (48 * (fib_number(term + 1) - 1) ** 2 * (fib_number(term + 2)-2) ** 2)) ** ess
+
+
+big_straight_diff <- (log((fib_number(term + 2) - 2) / (2 * fib_number(term) - 2)) + eul - fib_number(term + 1) / (4 * (fib_number(term + 2) - 2) * (fib_number(term) - 1)) + ((fib_number(term + 2) - 2) ** 2 - 2 * (fib_number(term) - 1) ** 2) / (24 * (fib_number(term + 2) - 2) ** 2 * (fib_number(term) - 1) ** 2)) ** ess - (log((2 *  fib_number(term + 1) - 2) / (fib_number(term + 2) - 2)) - fib_number(term - 1) / (4 * (fib_number(term + 2) - 2) * (fib_number(term + 1) - 1))) ** ess
+
+  
+cum_big_straight_diff <- cum_big_straight_diff + big_straight_diff
+
+cum_little_straight_diff <- cum_little_straight_diff + little_straight_diff
+
+df <-data.frame(cum_little_straight_diff, cum_big_straight_diff)
+return(df)
+
+gc()
+  
+}
+
+
+```
+
+```{r Straight sum Euler Test}
+
+Straight_Euler_Approx(1, 5)
+```
+
+```{r Straight Euler Sum Approximator- v2 (ChatGPT)}
+
+library(gmp)
+library(pracma)
+
+eul <- -digamma(1)
+
+Straight_Euler_Approx <- function(ess, veclen) {
+  num_vec <- 2:(veclen+1)
+  cum_big_straight_diff <- numeric(veclen)
+  cum_little_straight_diff <- numeric(veclen)
+  
+  for (term in num_vec) {
+    n1 <- as.bigz(fib_number(term + 2) - 1)
+    m1 <- as.bigz(2 * fib_number(term) - 2)
+    little_straight_diff <- log(as.numeric(n1) / as.numeric(m1 - 1)) - as.numeric(n1 - m1 + 1) / (2 * as.numeric(n1) * as.numeric(m1 - 1))
+
+    n2 <- as.bigz(2 * fib_number(term + 1) - 2)
+    m2 <- as.bigz(fib_number(term + 2) - 2)
+    big_straight_diff <- log(as.numeric(n2) / as.numeric(m2 - 1)) - as.numeric(n2 - m2 + 1) / (2 * as.numeric(n2) * as.numeric(m2 - 1)) +
+                         (as.numeric(n2^2) - as.numeric((m2 - 1)^2)) / (12 * as.numeric(n2^2) * as.numeric((m2 - 1)^2))
+    
+    cum_little_straight_diff[term - 1] <- cum_little_straight_diff[term - 1] + little_straight_diff ** ess
+    cum_big_straight_diff[term - 1] <- cum_big_straight_diff[term - 1] + big_straight_diff ** ess
+  }
+  
+  df <- data.frame(cum_little_straight_diff, cum_big_straight_diff)
+  return(df)
+}
+
+```
+
+```{r Euler Sum Individual Code}
+eul <- -digamma(1)
+
+Euler_Over <- function(upper, lower = 0) {
+  if(upper <= 0) {
+    result <- 0
+  }
+  else {
+  num <- log(upper) + eul + 1/(2*upper) - 1/(12*upper ** 2) + 1/(252 * upper ** 3)
+  
+if (lower > 1) {
+result <- num - (log(lower - 1) + eul + 1/(2*lower - 1) - 1/(12*(lower - 1) ** 2) + 1/(252 * (lower - 1) ** 3))
+}
+  else {result <- num
+  }
+  }
+return(result)
+}
+
+Euler_Under <- function(upper, lower = 0) {
+  
+if (upper <= 0) {
+  result <- 0
+}
+  else {
+  num <- log(upper) + eul + 1/(2*upper) - 1/(12*upper ** 2)
+  
+if (lower > 1) {
+result <- num - (log(lower - 1) + eul + 1/(2*lower - 1) - 1/(12*(lower - 1) ** 2))
+} 
+  else {result <- num}
+  }
+return(result)
+}
+
+
+
+len <- 15
+index <- numeric(len)
+reciprocal_sum <- numeric(len)
+over <- numeric(len)
+under <- numeric(len)
+for (i in 1:len) {
+  index[i] <- i
+  reciprocal_sum[i] = sum(1/(1:i))
+  over[i] <- Euler_Over(i)
+  under[i] <- Euler_Under(i)
+  
+}
+Euler_approx_tibble <-tibble(
+  index, 
+  reciprocal_sum, 
+  over, 
+  under
+)
+
+Euler_approx_tibble %>% select(index, under, reciprocal_sum, over)
+```
+
+```{r Straight Euler Approximator v3}
+
+eul <- -digamma(1)
+
+Big_Straight_Euler_Approx <- function(ess, veclen) {
+num_vec <- 2:(veclen+1)
+summ <- 0
+cum_big_straight_diff <- 0
+for (term in num_vec) {
+
+big_straight_diff <- (Euler_Over(fib_number(term + 2) - 2, 2 * fib_number(term) - 1)** ess - Euler_Under(2 * fib_number(term + 1) - 2, fib_number(term + 2) - 1) ** ess)
+
+cum_big_straight_diff <- cum_big_straight_diff + big_straight_diff
+}
+return(cum_big_straight_diff)
+}
+
+Little_Straight_Euler_Approx <- function(ess, veclen) {
+num_vec <- 2:(veclen+1)
+summ <- 0
+cum_little_straight_diff <- 0
+for (term in num_vec) {
+little_straight_diff <- (Euler_Under(fib_number(term + 2) - 2, 2 * fib_number(term) - 1)** ess - Euler_Over(2 * fib_number(term + 1) - 2, fib_number(term + 2) - 1) ** ess)
+
+cum_little_straight_diff <- cum_little_straight_diff + little_straight_diff
+}
+return(cum_little_straight_diff)
+}
+gc()
+  
+
+
+```
+
+```{r Straight Euler Test (for v3)}
+
+len <- 20
+index <- numeric(len)
+reciprocal_sum <- numeric(len)
+CLSD <-numeric(len)
+CBSD <- numeric(len)
+for (i in 1:len) {
+  index[i] <- i 
+  reciprocal_sum[i] <- sum(1/(1:i))
+  CLSD[i] <- Little_Straight_Euler_Approx(1,i)
+  CBSD[i] <- Big_Straight_Euler_Approx(1,i)
+}
+  
+  Euler_Approx_Tibble <- tibble::tibble(
+  index = index,
+  CLSD = CLSD,
+  CBSD = CBSD,
+  .name_repair = "minimal"  # Specify how to repair non-syntactic names
+)
+
+  Euler_Approx_Tibble
+  
+  Euler_Approx_Pair <- function(upper, lower = 0) {
+    tib <- tibble(
+      Euler_Under(upper, lower),
+      Euler_Over(upper, lower)
+    )
+    return(tib)
+  }
+
+```
+
+```{r function (xe^(-x))/(x+1)}
+Consec_Values_Tib_All_fEss <-Consec_Values_Tib_All  %>%
+  select(Ess, Sum45) %>%
+  filter(Ess >= 0)   %>%
+   mutate(fEss = 0.25 *(Ess * exp(-Ess)) / (Ess + 1), 
+          index = row_number())
+Consec_Values_Tib_All_fEss
+
+
+intgl45 <- numeric(1)
+for (i in (1:62)) {
+  intgl45 <- intgl45 + (Consec_Values_Tib_All_fEss[i+1,2]+Consec_Values_Tib_All_fEss[i,2]) * (Consec_Values_Tib_All_fEss[i+1,1]-Consec_Values_Tib_All_fEss[i,1]) / (2)
+  
+}
+intgl45 <- intgl45[[1]]
+intgl45
+
+#intgl <- intgl_fEss
+
+
+intgl_fEss <-numeric(1)
+for (i in (1:62)) {
+  intgl_fEss <- intgl_fEss + (Consec_Values_Tib_All_fEss[i+1,3]+Consec_Values_Tib_All_fEss[i,3]) * (Consec_Values_Tib_All_fEss[i+1,1]-Consec_Values_Tib_All_fEss[i,1]) / (2)
+  
+}
+
+intgl_fEss <- intgl_fEss[[1]]
+intgl_fEss
+
+Consec_Values_Tib_All_fEss %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45 / intgl45)) +
+  geom_line(aes(y = Sum45 / intgl45)) + 
+    geom_point(aes(y = fEss / intgl_fEss), color = "blue") +
+  geom_line(aes(y = fEss / intgl_fEss), color = "blue") + 
+  labs(
+    y = "Sum Values",
+    x = "Ess",
+    title = "Ess vs. Sum45 and x/(x+1)e^(-x)",
+    color = "Legend"
+  ) +
+  theme_minimal()
+
+
+
+```
+
+```{r normalized 45l fib cons graph}
+Consec_Values_Tib_All %>%
+  filter(Ess >= 0) %>%
+  mutate(Sum45Norm = Sum45 / intgl45val[[1]]) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum45Norm)) +
+  geom_line(aes(y = Sum45Norm))
+
+
+intgl45val[[1]]
+```
+
+
+```{r Tibble for Above Sums Calculated}
+Ess_Sum_Tibble<- tibble(
+  Ess,
+  SSum
+) %>%
+  mutate(Ess = as.integer(Ess * 10))
+
+Ess_Sum_Tibble
+```
+
+
+```{r Peaks precision manual calculation}
+options(digits = 22)
+epsilon <- 1* 10 ** (-2)
+prec <- 45
+Thousand_sum(.75 + epsilon, prec)
+Thousand_sum(.75, prec)
+Thousand_sum(.75 - epsilon, prec)
+```
+```{r Alt Fib Sum Test}
+Alt_Thousand_sum(1,3)
+```
+
+
+```{r Consec Triangular Calculations for s1}
+TC1000 <- 1.600389006111099909901
+  TC1500 <-Tri_Cons_Sum(1,1500)
+  gc()
+  TC2000 <-Tri_Cons_Sum(1,2000)
+  gc()
+  TC2500 <-Tri_Cons_Sum(1,2500)
+  gc()
+  TC3000 <-Tri_Cons_Sum(1,3000)
+  TC5000 <-Tri_Cons_Sum(1,5000)
+  gc()
+
+TC10000 <-Tri_Cons_Sum(1,10000)
+  gc()
+   TC20000 <-Tri_Cons_Sum(1,20000)
+  gc()
+  TC1000
+  TC1500
+  TC2000
+  TC2500
+  TC3000
+  TC5000
+  TC10000
+
+```
+
+
+```{r Tri Cons Sum1000 Map and Approximating Formula}
+tcA <-.55
+tcB <- 1.5
+
+TriConsFullTibble %>% filter(Ess >= 0) %>%
+  mutate(fEss = 1 + exp(-tcA*Ess) *(tcB*Ess-1)) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum1000)) + 
+  geom_line(aes(y = Sum1000)) +
+  geom_point(aes(y = fEss), color = "blue") + 
+  geom_line(aes(y = fEss), color = "blue")
+```
+
+
+```{r Tri Cons Sum1000 Map and normalising and Approximating Formula try 1}
+
+TriConsFullTibble
+
+intgl1K <- numeric(1)
+for (i in (6:67)) {
+  intgl1K <- intgl1K + (TriConsFullTibble[i+1,15]+TriConsFullTibble[i,15]) * (TriConsFullTibble[i+1,1]-TriConsFullTibble[i,1]) / (2*intgl1Kval)
+  
+}
+intgl1K[[1]]
+
+#intgl1Kval <- intgl1K[[1]]
+
+
+
+TriConModel <- nlsLM(Sum1000 ~  1 + exp(tcA*Ess) *(tcB*Ess-1), data = TriConsFullTibblePos, start = list(tcA = .55, tcB = 1.5))
+                   
+summary(TriConModel)
+
+tcA_coef <-coef(TriConModel)[[1]]
+tcB_coef <-coef(TriConModel)[[2]]
+
+TriConsFullTibble %>% filter(Ess >= 0) %>% select(1,15) %>%view()
+  
+  mutate(fEss = 1 + exp(tcA_coef*Ess) *(tcB_coef*Ess-1)) %>%
+  ggplot(aes(x = Ess)) + 
+  geom_point(aes(y = Sum1000)) + 
+  geom_line(aes(y = Sum1000)) +
+  geom_point(aes(y = fEss), color = "blue") + 
+  geom_line(aes(y = fEss), color = "blue") + 
+  geom_point(aes(y = fEss - Sum1000), color = "red") + 
+  geom_line(aes(y = fEss - Sum1000), color = "red")
+```
+
+
+```{r}
+Con_Tri_All <- read.csv("Con_Tri_All.csv")
+
+Con_Tri_Tibble <- Con_Tri_All %>% pivot_longer(names_to = "Length", values_to = "PartSum", cols = 3:16) %>% mutate(Length = as.numeric(str_sub(Length, start = 4)))
+Con_Tri_Tibble
+
+```
+
+
+```{r Tri Alt Sums by Ess graph (old)}
+TriAlt1000 %>% unique() %>%
+  filter(Ess >= 0) %>%
+  ggplot(aes(x= Ess)) + 
+  geom_point(aes(y = Sum1000))
+```
+
+```{r Tri Alt Join}
+TriAltFull <- reduce(, full_join, by = "Ess") 
+
+TriAltFull <- list(TriAlt25, TriAlt50, TriAlt75, TriAlt100, TriAlt125, 
+                   TriAlt150, TriAlt200, TriAlt250, TriAlt300, TriAlt400, 
+                   TriAlt500, TriAlt600, TriAlt750, TriAlt1000, TriAlt1500) %>%
+  map(~ distinct(.x, Ess, .keep_all = TRUE)) %>%
+  reduce(full_join, by = "Ess") %>%
+  unique()
+
+TriAlt25 %>% mutate(index = row_number())
+
+for (i in 1:21) {
+  
+  TriAlt25[[45+i, 2]] <- Tri_Alt_Sum(0.05*i+1.95, 25)
+}
+
+
+
+
+
+ TriAltFull %>% filter(Ess >= 0) %>% pivot_longer(2:16, names_to = "Length", values_to = "Sum") %>% mutate(Length = as.numeric(str_remove( Length, "^Sum"))) %>%
+   ggplot(aes(x = Ess, color = as.factor(Length))) + 
+   geom_point(aes(y = Sum)) + 
+   geom_line(aes(y = Sum)) + 
+   geom_jitter(aes(y= Sum))
+```
+
+
+```{r Alt Term and PlusMinus Term defs}
+Alt_Thousand_term <- function(ess, veclen) {
+  num_vec <- 1:veclen
+ numdiff <- 0
+  
+  for (term in num_vec) {
+    numdiff <-(sum(seq(2 * fib_number(term + 1) - 1, 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess - 
+                    sum(seq(2 * fib_number(term + 1), 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess)
+  }
+  
+  return(numdiff)
+}
+
+gc()
+
+
+Alt_Plus_term <- function(ess, veclen) {
+  num_vec <- 1:veclen
+ numdiff <- 0
+  
+  for (term in num_vec) {
+    plusdiff <-(sum(seq(2 * fib_number(term + 1) - 1, 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess)
+    minusdiff <- sum(seq(2 * fib_number(term + 1), 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess
+  } 
+    return(plusdiff)
+}
+ 
+
+ Alt_Minus_term <- function(ess, veclen) {
+  num_vec <- 1:veclen
+ numdiff <- 0
+  
+  for (term in num_vec) {
+    plusdiff <-(sum(seq(2 * fib_number(term + 1) - 1, 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess)
+    minusdiff <- sum(seq(2 * fib_number(term + 1), 2 * fib_number(term + 2) - 2, 2) ** (-1)) ** ess
+  } 
+    return(minusdiff)
+}
+
+ 
+ size <-40
+alt_part_sum <- 0
+  alt_value <- 0
+  alt_PS_list <- numeric(size)
+  alt_value_list <- numeric(size)
+  alt_plus_list <-numeric(size)
+  alt_minus_list <- numeric(size)
+
+for (i in 1:size) {
+  alt_part_sum <- alt_part_sum + Alt_Thousand_term(1, i)
+  alt_value <- Alt_Thousand_term(1, i)
+  alt_PS_list[i] <-alt_part_sum
+  alt_value_list[i] <- alt_value
+  alt_plus_list[i] <- Alt_Plus_term(1, i)
+  alt_minus_list[i] <- Alt_Minus_term(1, i)
+  gc()
+}
+
+  
+  
+
+  
+   
+  
+  alt_PS_list
+  alt_value_list
+  
+  alt_tibble <- tibble(
+    Iteration = 1:size,
+    Alt_Value = alt_value_list,
+    Alt_PartSum = alt_PS_list,
+    Alt_Plus = alt_plus_list,
+    Alt_Minus = alt_minus_list
+  )
+  
+  alt_tibble %>% view()
+```
+
+```{r TC2K Calculation}
+TC2K <-numeric(100)
+
+
+```
+
+```{r Triangular Consecutive Calculations}
+
+sumr <- function(a, b) {
+  # Ensure a is the smaller number and b is the larger one
+  lower <- min(a, b)
+  upper <- max(a, b)
+  
+  # Calculate the sum of reciprocals
+  sum_reciprocal <- sum(1 / seq(lower, upper))
+  
+  return(sum_reciprocal)
+}
+
+#Formula Verification
+1/2 + sumr(3,5) - sumr(6,8) + sumr(9,14) - sumr(15,20) + sumr(21,30) - sumr(31,40)
+
+TriConNums <- function(n) {
+  len <- n * (n + 1) / 2
+  start <- (n - 1) * n * (n + 1) / 3
+  
+  pos <- sum(1 / ((start + 1):(start + len)))
+  neg <- sum(1 / ((start + len + 1):(start + 2 * len)))
+  
+  return(c(pos, neg, pos - neg))
+}
+
+
+TriConNums(5)
+
+
+
+TriConTestTibble <- map_dfr(1:500, ~as_tibble(t(TriConNums(.))), .id = "n")
+
+colnames(TriConTestTibble) <- c("n", "pos", "neg", "dif")
+
+
+view(TriConTestTibble)
+
+```
+
