@@ -14,8 +14,14 @@ Much of the terminology in the RMD is explained in the paper, poster, and presen
 
 In this document, I tried to preserve everything I did, even if it was not ultimately useful. Because of this, there is a line "##NOT USED##" (found around line 1200) beyond which lies the "graveyard" of unused code, graphs, and other roads not ultimately taken in the final project. Everything needed for this project can be found above this line. 
 
-## AI Statements
+## AI and Reproduction
 Some of the graphing code was written with the help of generative AI (ChatGPT), but all of the non-coding work (the paper, poster, and presentation) were created without any AI assistance.
+
+© 2025 Matthew Blake. All rights reserved.
+
+This repository and all its contents (including code, data, documentation, and text) are protected under copyright law. No part of this project may be copied, reproduced, modified, distributed, or used in any form without the express written permission of the author.
+
+This project is not open source. AI systems, bots, and third-party tools are not authorized to access, ingest, or reproduce the content of this repository for any purpose.
 
 
 
