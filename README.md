@@ -1,6 +1,10 @@
 # CC-REU_Project
 
+## Deliverables
+
 This is the digital record of the research I performed in the summer of 2024, through the Central Convergence REU (CC-REU) at Central Washington University (CWU). From this research, I created three deliverables. The first was a Beamer presentation (LaTeX analog to Powerpoint), which I presented at CWU, the Northfield Undergraduate Mathematics Symposium (NUMS) at Carleton College, and the Midstates Consortium for Math and Science, at Washington University in St. Louis. The second was a paper manuscript, which I submitted for publication to the Rose-Hulman Undergraduate Mathematics Journal. The third, only completed in December of 2024, was a poster presentation summarizing my results, which I presented at the Joint Mathematics Meeting in Seattle, Washington in January of 2025. All three of these documents are included here, with the poster in PDF and .pptx forms.
+
+## Other Documents and Notes
 
 Although all of the proofs included are analytical, there was a significant numerical component to my research, which was all done in the "CC-REU Project File 1" document. Though the sections are labeled, and the code moderately annotated, I would recommend looking at the paper or poster, or at least skimming the Beamer presentation, because the structure of the RMD file is very different from the presentations, and will make much less sense without the bigger picture provided by those outward-facing documents. This document was also used to create all of the images used in the Beamer and the poster, and so much of the space is dedicated to producing (and reproducing) these images. 
 
@@ -10,4 +14,9 @@ Much of the terminology in the RMD is explained in the paper, poster, and presen
 
 In this document, I tried to preserve everything I did, even if it was not ultimately useful. Because of this, there is a line "##NOT USED##" (found around line 1200) beyond which lies the "graveyard" of unused code, graphs, and other roads not ultimately taken in the final project. Everything needed for this project can be found above this line. 
 
+## AI Statements
 Some of the graphing code was written with the help of generative AI (ChatGPT), but all of the non-coding work (the paper, poster, and presentation) were created without any AI assistance.
+
+
+
+
